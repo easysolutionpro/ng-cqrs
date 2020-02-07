@@ -8,7 +8,6 @@ import { ObservableBus } from './utils';
 import { DefaultPubSub } from './helpers/default-pubsub';
 import { NgCommandBus } from './command-bus';
 import { InvalidSagaException } from './exceptions';
-import { NgLogger } from './services/logger.service'
 import { ofType } from './operators/of-type';
 
 export type EventHandlerType = Type<INgEventHandler<INgEvent>>;
@@ -24,7 +23,6 @@ export class NgEventBus extends ObservableBus<INgEvent> implements INgEventBus
         private readonly moduleRef: NgModuleRef<any>,
         private readonly commandBus: NgCommandBus,
         private readonly zone: NgZone,
-        private readonly logger: NgLogger
     )
     {
         super();
@@ -50,7 +48,7 @@ export class NgEventBus extends ObservableBus<INgEvent> implements INgEventBus
         ...types: Type<TOutput>[]
     ): Observable<TOutput>
     {
-        return this.subject$.pipe(ofType(...types),share());
+        return this.subject$.pipe(ofType(...types), share());
     }
 
     onModuleDestroy(): void
@@ -75,46 +73,25 @@ export class NgEventBus extends ObservableBus<INgEvent> implements INgEventBus
     {
         this.zone.runOutsideAngular(() =>
         {
-            try
-            {
-                this._publisher.publish(event);
-            }
-            catch (e)
-            {
-                this.logger.error(e);
-            }
+            this._publisher.publish(event);
         });
     }
 
     publishAll(events: INgEvent[])
     {
-        try
-        {
-            (events || []).forEach(event => this._publisher.publish(event));
-        }
-        catch (e)
-        {
-            this.logger.error(e);
-        }
+        (events || []).forEach(event => this._publisher.publish(event));
     }
 
     bind(handler: INgEventHandler<INgEvent>, name: string)
     {
         this.zone.runOutsideAngular(() =>
         {
-            try
+            const stream$      = name ? this.ofEventName(name) : this.subject$;
+            const subscription = stream$.subscribe(event =>
             {
-                const stream$      = name ? this.ofEventName(name) : this.subject$;
-                const subscription = stream$.subscribe(event =>
-                {
-                    return handler.handle(event);
-                });
-                this.subscriptions.push(subscription);
-            }
-            catch (e)
-            {
-                this.logger.error(e);
-            }
+                return handler.handle(event);
+            });
+            this.subscriptions.push(subscription);
         });
     }
 

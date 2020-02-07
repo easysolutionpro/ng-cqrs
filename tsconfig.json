@@ -17,6 +17,14 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "ng-cqrs": [
+        "dist/ng-cqrs"
+      ],
+      "ng-cqrs/*": [
+        "dist/ng-cqrs/*"
+      ]
+    }
   }
 }

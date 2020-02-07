@@ -7,7 +7,7 @@ export * from './command-bus';
 export * from './event-bus';
 export * from './operators';
 export * from './query-bus';
-export * from './services/logger.service';
+
 
 
 

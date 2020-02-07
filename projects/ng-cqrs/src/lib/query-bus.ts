@@ -5,7 +5,6 @@ import { QueryHandlerNotFoundException } from './exceptions';
 import { InvalidQueryHandlerException } from './exceptions/invalid-query-handler.exception';
 import { INgQuery, INgQueryBus, INgQueryHandler, INgQueryResult } from './interfaces';
 import { ObservableBus } from './utils/observable-bus';
-import { NgLogger } from './services/logger.service'
 
 export type QueryHandlerType = Type<INgQueryHandler<INgQuery, INgQueryResult>>;
 
@@ -17,7 +16,6 @@ export class NgQueryBus extends ObservableBus<INgQuery> implements INgQueryBus
     constructor(
         private readonly moduleRef: NgModuleRef<any>,
         private readonly zone: NgZone,
-        private readonly logger: NgLogger
     )
     {
         super();
@@ -30,17 +28,13 @@ export class NgQueryBus extends ObservableBus<INgQuery> implements INgQueryBus
         return this.zone.runOutsideAngular(() =>
         {
             const handler = this.handlers.get(this.getQueryName(query));
-            if (!handler) throw new QueryHandlerNotFoundException();
+            if (!handler)
+            {
+                throw new QueryHandlerNotFoundException();
+            }
 
             this.subject$.next(query);
-            try
-            {
-                return handler.execute(query) as Promise<TResult>;
-            }
-            catch (e)
-            {
-                this.logger.error(e);
-            }
+            return handler.execute(query) as Promise<TResult>;
         });
     }
 

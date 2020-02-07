@@ -7,7 +7,6 @@ import { INgCommand, ICommandBus, INgCommandHandler } from './interfaces/index';
 import { ObservableBus } from './utils/observable-bus';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
-import { NgLogger } from './services/logger.service'
 
 export type CommandHandlerType = Type<INgCommandHandler<INgCommand>>;
 
@@ -19,7 +18,6 @@ export class NgCommandBus extends ObservableBus<INgCommand> implements ICommandB
     constructor(
         private readonly moduleRef: NgModuleRef<any>,
         private readonly zone: NgZone,
-        private readonly logger: NgLogger
     )
     {
         super();
@@ -50,14 +48,7 @@ export class NgCommandBus extends ObservableBus<INgCommand> implements ICommandB
             }
             this.subject$.next(command);
 
-            try
-            {
-                return handler.execute(command);
-            }
-            catch (e)
-            {
-                this.logger.error(e);
-            }
+            return handler.execute(command);
         });
     }
 
