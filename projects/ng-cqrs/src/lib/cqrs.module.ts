@@ -47,10 +47,14 @@ export class NgCQRSModule
     {
         const { events, queries, sagas, commands } = this.explorerService.explore();
 
-        this.eventsBus.register(events);
-        this.commandsBus.register(commands);
-        this.queryBus.register(queries);
-        this.eventsBus.registerSagas(sagas);
+        // TODO: Fix Angular 9 injector error
+        setTimeout(() =>
+        {
+            this.eventsBus.register(events);
+            this.commandsBus.register(commands);
+            this.queryBus.register(queries);
+            this.eventsBus.registerSagas(sagas);
+        });
     }
 }
 

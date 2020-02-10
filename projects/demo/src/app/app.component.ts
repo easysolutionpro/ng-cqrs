@@ -23,11 +23,13 @@ export class AppComponent implements OnInit
         // Listen all events
         this.eventBus.listenAll.subscribe(event =>
         {
+            console.log(event);
         });
 
         // Listen all commands
         this.commandBus.listenAll.subscribe(command =>
         {
+            console.log(command);
         });
     }
 
