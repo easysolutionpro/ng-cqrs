@@ -27,7 +27,6 @@ export class ShowNotificationCommand
 The `NgCommandBus` is a stream of commands. It delegates commands to the equivalent handlers. Each command must have an appropriate command handler:
 
 ```typescript
-@Injectable()
 @NgCommandHandler(ShowNotificationCommand)
 export class ShowNotificationHandler implements INgCommandHandler<ShowNotificationCommand>
 {
@@ -77,7 +76,6 @@ export class ConfirmationSuccessEvent
 ```
 Each event can have multiple Event Handlers.
 ```typescript
-@Injectable()
 @NgEventsHandler(ConfirmationSuccessEvent)
 export class ConfirmationSuccessHandler implements INgEventHandler<ConfirmationSuccessEvent>
 {
@@ -120,7 +118,6 @@ export class HeroesGameSagas {
 
 The `NgQueryBus` follows the same pattern as the `NgCommandsBus`. Example Query Handler:
 ```typescript
-@Injectable()
 @NgQueryHandler(GetEmptyBlockQuery)
 export class GetEmptyBlockHandler implements INgQueryHandler<GetEmptyBlockQuery>
 {

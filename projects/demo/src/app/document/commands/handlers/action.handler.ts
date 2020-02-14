@@ -2,9 +2,7 @@ import { NgCommandHandler } from '../../../../../../ng-cqrs/src/lib/decorators';
 import { ActionCommand } from '../impl/action.command';
 import { INgCommandHandler } from '../../../../../../ng-cqrs/src/lib/interfaces';
 import { NgCommandBus, NgEventBus } from '../../../../../../ng-cqrs/src/lib';
-import { Injectable } from '@angular/core';
 
-@Injectable()
 @NgCommandHandler(ActionCommand)
 export class ActionHandler implements INgCommandHandler<ActionCommand>
 {
