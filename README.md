@@ -8,6 +8,32 @@ A lightweight **CQRS** module for [Angular](https://angular.io) framework. This 
 $ npm install --save ng-cqrs
 ```
 
+## src/app/app.module.ts 
+
+```typescript
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { environment } from '../environments/environment';
+ 
+import { AppComponent } from './app.component';
+ 
+import { NgCQRSModule } from 'ng-cqrs';
+ 
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    NgCQRSModule.forRoot({
+                production: environment.production,
+                providers : []
+            }),
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
 ## Commands
 In this model, each action is called a Command. When a command is sent, the application responds to it. 
 Let's create for example a `ShowNotificationCommand` command to display notifications. Let's see how the command looks:

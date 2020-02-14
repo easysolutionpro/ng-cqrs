@@ -4,6 +4,8 @@ import { QUERY_HANDLER_METADATA } from './decorators/constants';
 import { QueryHandlerNotFoundException } from './exceptions';
 import { InvalidQueryHandlerException } from './exceptions/invalid-query-handler.exception';
 import { INgQuery, INgQueryBus, INgQueryHandler, INgQueryResult } from './interfaces';
+import { BootstrapperService } from './services/bootstrapper.service';
+import { NgLogger } from './services/logger.service';
 import { ObservableBus } from './utils/observable-bus';
 
 export type QueryHandlerType = Type<INgQueryHandler<INgQuery, INgQueryResult>>;
@@ -16,25 +18,33 @@ export class NgQueryBus extends ObservableBus<INgQuery> implements INgQueryBus
     constructor(
         private readonly moduleRef: NgModuleRef<any>,
         private readonly zone: NgZone,
+        private readonly logger: NgLogger,
+        private readonly bootstrapper: BootstrapperService
     )
     {
         super();
     }
 
-    execute<T extends INgQuery, TResult extends INgQueryResult>(
+    async execute<T extends INgQuery, TResult extends INgQueryResult>(
         query: T,
     ): Promise<TResult>
     {
+        await this.bootstrapper.appBootstrapped$.toPromise();
+
         return this.zone.runOutsideAngular(() =>
         {
             const handler = this.handlers.get(this.getQueryName(query));
-            if (!handler)
-            {
-                throw new QueryHandlerNotFoundException();
-            }
+            if (!handler) { throw new QueryHandlerNotFoundException(); }
 
             this.subject$.next(query);
-            return handler.execute(query) as Promise<TResult>;
+            try
+            {
+                return handler.execute(query) as Promise<TResult>;
+            }
+            catch (e)
+            {
+                this.logger.error(e);
+            }
         });
     }
 

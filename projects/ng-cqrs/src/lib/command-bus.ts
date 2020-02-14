@@ -1,12 +1,14 @@
-import 'reflect-metadata';
 import { Injectable, NgModuleRef, NgZone, Type } from '@angular/core';
+import 'reflect-metadata';
+import { Observable } from 'rxjs';
+import { share } from 'rxjs/operators';
 import { COMMAND_HANDLER_METADATA } from './decorators/constants';
 import { CommandHandlerNotFoundException } from './exceptions/command-not-found.exception';
 import { InvalidCommandHandlerException } from './exceptions/invalid-command-handler.exception';
-import { INgCommand, ICommandBus, INgCommandHandler } from './interfaces/index';
+import { ICommandBus, INgCommand, INgCommandHandler } from './interfaces/index';
+import { BootstrapperService } from './services/bootstrapper.service';
+import { NgLogger } from './services/logger.service';
 import { ObservableBus } from './utils/observable-bus';
-import { Observable } from 'rxjs';
-import { share } from 'rxjs/operators';
 
 export type CommandHandlerType = Type<INgCommandHandler<INgCommand>>;
 
@@ -18,6 +20,8 @@ export class NgCommandBus extends ObservableBus<INgCommand> implements ICommandB
     constructor(
         private readonly moduleRef: NgModuleRef<any>,
         private readonly zone: NgZone,
+        private readonly logger: NgLogger,
+        private readonly bootstrapper: BootstrapperService
     )
     {
         super();
@@ -37,8 +41,10 @@ export class NgCommandBus extends ObservableBus<INgCommand> implements ICommandB
         });
     }
 
-    executeByName<T extends INgCommand>(command: T, name: string): Promise<any>
+    async executeByName<T extends INgCommand>(command: T, name: string): Promise<any>
     {
+        await this.bootstrapper.appBootstrapped$.toPromise();
+
         return this.zone.runOutsideAngular(() =>
         {
             const handler = this.handlers.get(name);
@@ -48,7 +54,14 @@ export class NgCommandBus extends ObservableBus<INgCommand> implements ICommandB
             }
             this.subject$.next(command);
 
-            return handler.execute(command);
+            try
+            {
+                return handler.execute(command);
+            }
+            catch (e)
+            {
+                this.logger.error(e);
+            }
         });
     }
 

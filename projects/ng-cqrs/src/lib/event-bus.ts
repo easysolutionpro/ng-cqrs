@@ -1,14 +1,16 @@
-import 'reflect-metadata';
 import { Injectable, NgModuleRef, NgZone, Type } from '@angular/core';
-import { EVENTS_HANDLER_METADATA, SAGA_METADATA } from './decorators/constants';
-import { filter, share } from 'rxjs/operators';
+import 'reflect-metadata';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { INgEvent, INgEventBus, INgEventHandler, INgEventPublisher, INgSaga } from './interfaces';
-import { ObservableBus } from './utils';
-import { DefaultPubSub } from './helpers/default-pubsub';
+import { filter, share } from 'rxjs/operators';
 import { NgCommandBus } from './command-bus';
+import { EVENTS_HANDLER_METADATA, SAGA_METADATA } from './decorators/constants';
 import { InvalidSagaException } from './exceptions';
+import { DefaultPubSub } from './helpers/default-pubsub';
+import { INgEvent, INgEventBus, INgEventHandler, INgEventPublisher, INgSaga } from './interfaces';
 import { ofType } from './operators/of-type';
+import { BootstrapperService } from './services/bootstrapper.service';
+import { NgLogger } from './services/logger.service';
+import { ObservableBus } from './utils';
 
 export type EventHandlerType = Type<INgEventHandler<INgEvent>>;
 
@@ -23,6 +25,8 @@ export class NgEventBus extends ObservableBus<INgEvent> implements INgEventBus
         private readonly moduleRef: NgModuleRef<any>,
         private readonly commandBus: NgCommandBus,
         private readonly zone: NgZone,
+        private readonly logger: NgLogger,
+        private readonly bootstrapper: BootstrapperService
     )
     {
         super();
@@ -73,25 +77,48 @@ export class NgEventBus extends ObservableBus<INgEvent> implements INgEventBus
     {
         this.zone.runOutsideAngular(() =>
         {
-            this._publisher.publish(event);
+            try
+            {
+                this.bootstrapper.safelyRun(() =>
+                    this._publisher.publish(event)
+                );
+            }
+            catch (e)
+            {
+                this.logger.error(e);
+            }
         });
     }
 
     publishAll(events: INgEvent[])
     {
-        (events || []).forEach(event => this._publisher.publish(event));
+        try
+        {
+            (events || []).forEach(event => this.publish(event));
+        }
+        catch (e)
+        {
+            this.logger.error(e);
+        }
     }
 
     bind(handler: INgEventHandler<INgEvent>, name: string)
     {
         this.zone.runOutsideAngular(() =>
         {
-            const stream$      = name ? this.ofEventName(name) : this.subject$;
-            const subscription = stream$.subscribe(event =>
+            try
             {
-                return handler.handle(event);
-            });
-            this.subscriptions.push(subscription);
+                const stream$      = name ? this.ofEventName(name) : this.subject$;
+                const subscription = stream$.subscribe(event =>
+                {
+                    return handler.handle(event);
+                });
+                this.subscriptions.push(subscription);
+            }
+            catch (e)
+            {
+                this.logger.error(e);
+            }
         });
     }
 
