@@ -1,5 +1,5 @@
 {
-  "name": "angular-starter",
+  "name": "ngx-cqrs",
   "version": "11.0.9",
   "scripts": {
     "ng": "ng",
@@ -16,9 +16,8 @@
     "package": "npm run build_lib && npm run copy-files && npm run npm_pack"
   },
   "author": {
-    "name": "danny",
-    "email": "dannyganatan@gmail.com",
-    "url": "https://www.ganatan.com/"
+    "name": "ivkan",
+    "email": "ivan.kalashnik@immerss.com"
   },
   "license": "ISC",
   "private": true,
