@@ -1,11 +1,11 @@
 import { map } from 'rxjs/operators';
-import { ofType } from '../cqrs/operators';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { IAction } from '../cqrs/interfaces';
-import { Saga } from '../cqrs/decorators';
 import { SampleAction } from '../actions/sample/sample.action';
 import { KillDragonAction } from '../actions/kill-dragon/kill-dragon.action';
+import { Saga } from '../../../projects/ngx-cqrs/src/lib/decorators';
+import { IAction } from '../../../projects/ngx-cqrs/src/lib/interfaces';
+import { ofType } from '../../../projects/ngx-cqrs/src/lib/operators';
 
 @Injectable()
 export class HeroesGameSagas
