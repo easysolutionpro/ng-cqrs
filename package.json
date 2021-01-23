@@ -1,6 +1,6 @@
 {
-  "name": "ngx-cqrs",
-  "version": "11.0.9",
+  "name": "ng-cqrs",
+  "version": "2.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4200",
@@ -8,19 +8,20 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "build_lib": "ng build ngx-cqrs",
-    "copy-license": "cp ./LICENSE ./dist/ngx-cqrs",
-    "copy-readme": "cp ./README.md ./dist/ngx-cqrs",
+    "build_lib": "ng build ng-cqrs --prod",
+    "copy-license": "cp ./LICENSE ./dist/ng-cqrs",
+    "copy-readme": "cp ./README.md ./dist/ng-cqrs",
     "copy-files": "npm run copy-license && npm run copy-readme",
-    "npm_pack": "cd dist/ngx-cqrs && npm pack",
-    "package": "npm run build_lib && npm run copy-files && npm run npm_pack"
+    "npm_pack": "cd dist/ng-cqrs && npm pack",
+    "package": "npm run build_lib && npm run copy-files && npm run npm_pack",
+    "publish": "npm run package && cd dist/ng-cqrs && npm version patch && npm publish"
   },
   "author": {
     "name": "ivkan",
     "email": "ivan.kalashnik@immerss.com"
   },
   "license": "ISC",
-  "private": true,
+  "private": false,
   "dependencies": {
     "@angular/animations": "11.0.9",
     "@angular/common": "11.0.9",

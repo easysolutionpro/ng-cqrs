@@ -16,9 +16,9 @@
       "dom"
     ],
     "paths": {
-      "ngx-cqrs": [
-        "dist/ngx-cqrs/ngx-cqrs",
-        "dist/ngx-cqrs"
+      "ng-cqrs": [
+        "dist/ng-cqrs/ng-cqrs",
+        "dist/ng-cqrs"
       ]
     }
   }

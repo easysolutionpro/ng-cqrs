@@ -119,38 +119,38 @@
         }
       }
     },
-    "ngx-cqrs": {
+    "ng-cqrs": {
       "projectType": "library",
-      "root": "projects/ngx-cqrs",
-      "sourceRoot": "projects/ngx-cqrs/src",
+      "root": "projects/ng-cqrs",
+      "sourceRoot": "projects/ng-cqrs/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "tsConfig": "projects/ngx-cqrs/tsconfig.lib.json",
-            "project": "projects/ngx-cqrs/ng-package.json"
+            "tsConfig": "projects/ng-cqrs/tsconfig.lib.json",
+            "project": "projects/ng-cqrs/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/ngx-cqrs/tsconfig.lib.prod.json"
+              "tsConfig": "projects/ng-cqrs/tsconfig.lib.prod.json"
             }
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/ngx-cqrs/src/test.ts",
-            "tsConfig": "projects/ngx-cqrs/tsconfig.spec.json",
-            "karmaConfig": "projects/ngx-cqrs/karma.conf.js"
+            "main": "projects/ng-cqrs/src/test.ts",
+            "tsConfig": "projects/ng-cqrs/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-cqrs/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/ngx-cqrs/tsconfig.lib.json",
-              "projects/ngx-cqrs/tsconfig.spec.json"
+              "projects/ng-cqrs/tsconfig.lib.json",
+              "projects/ng-cqrs/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
