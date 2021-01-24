@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { APP_STORE, appStore } from './app.store';
 import { CQRS_REGISTRY } from './cqrs-registry';
 import { HeroesGameSagas } from './sagas/heroes-game.saga';
-import { CqrsModule } from '../../projects/ng-cqrs/src/lib';
+import { CqrsModule } from '../../projects/ng-cqrs/src/lib/cqrs.module';
 
 @NgModule({
   declarations: [

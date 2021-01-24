@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { SampleAction } from './actions/sample/sample.action';
-import { ActionBus } from '../../projects/ng-cqrs/src/lib';
+import { ActionBus } from '../../projects/ng-cqrs/src/lib/action-bus';
 
 @Component({
   selector   : 'app-root',

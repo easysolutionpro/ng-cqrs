@@ -32,7 +32,7 @@ export class CqrsModule
     };
   }
 
-  private static createSourceInstances(...instances: any[])
+  private static createSourceInstances(...instances: any[]): any[]
   {
     return instances;
   }
