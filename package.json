@@ -14,7 +14,7 @@
     "copy-files": "npm run copy-license && npm run copy-readme",
     "npm_pack": "cd dist/ng-cqrs && npm pack",
     "package": "npm run build_lib && npm run copy-files && npm run npm_pack",
-    "publish": "npm run package && cd dist/ng-cqrs && npm version patch && npm publish"
+    "publish": "npm run package && cd dist/ng-cqrs && npm publish"
   },
   "author": {
     "name": "ivkan",
