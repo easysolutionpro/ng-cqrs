@@ -1,101 +1,130 @@
-# Angular 11 Example Starter
+## Description
 
-<table>
-<tr>
-<td>
-  <a href="https://www.ganatan.com/en">
-    <img src="./img/ganatan-about-github.png" align="right"
-    alt="Ganatan Angular Example Demo" width="140" height="140">
-  </a>
-
-it's part of a repo series designed to create a **Web Application with Angular 11**
-
-
-* Featuring [**Angular 11.0.9**](https://github.com/angular/angular/releases) & [**Angular CLI 11.0.7**](https://github.com/angular/angular-cli/releases/)
-
-
-* See the [**Live demo**](#live-demo), Test the repo with [**Quick start**](#quick-start) and for more information Read the step by step [**Tutorial**](#tutorial) or read the [**Getting started**](#getting-started)
-
-</td>
-</tr>
-</table>
-
-# [Live Demo](#live-demo)
-Here is a working live demo :  https://demo.ganatan.com/angular-example-starter
-
-
-<p align="center">
-  <p align="center">
-    <a href="https://demo.ganatan.com/angular-example-starter">
-      <img src="img/demo-angular-example-starter-github.png" alt="Demo example"/>
-    </a>
-  </p>
-</p>
-
-
-# [Quick start](#quick-start)
-
-```bash
-# choose a repo
-# download the example or clone the repo from github
-git clone https://github.com/ganatan/angular-example-starter.git
-
-# download the example or clone the repo from gitlab
-git clone https://gitlab.com/ganatan/angular-example-starter.git
-
-# download the example or clone the repo from bitbucket
-git clone https://bitbucket.org/ganatan/angular-example-starter.git
-
-# change directory
-cd angular-example-starter
-
-# install the repo with npm
-npm install
-
-# start the server
-npm start
-
-```
-in your browser go to [http://localhost:4200](http://localhost:4200) 
-
-
-# [Tutorial](#quick-start)
-
-Here is a step by step Tutorial :  https://www.ganatan.com/tutorials/getting-started-with-angular
-
-<p align="center">
-  <a href="https://www.ganatan.com/tutorials/getting-started-with-angular">
-    <img src="img/angular-example-starter-github.png" alt="Demo example"/>
-  </a>
-</p>
-
-# [Getting started](#getting-started)
-
+A lightweight **CQRS** module for [Angular](https://angular.io) framework. Action handler and query handler module are loaded with lazy-load at the moment of action or query call.
 
 ## Installation
-* `npm install` (installing dependencies)
-* `npm outdated` (verifying dependencies)
 
-## Development
-* `npm run start`
-* in your browser go to [http://localhost:4200](http://localhost:4200) 
+```bash
+$ npm install --save ng-cqrs
+```
 
-## Production 
-* `npm run build`
+## src/app/app.module.ts 
 
-## Tests
-* `npm run lint`
-* `npm run test`
-* `npm run e2e` 
+```typescript
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { environment } from '../environments/environment';
+ 
+import { AppComponent } from './app.component';
+ 
+import { CqrsModule } from 'ng-cqrs';
+ 
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    CqrsModule.forRoot({
+          sagas   : [HeroesGameSagas],
+          registry: [
+            {
+                impl   : KillDragonAction,
+                handler: () => import('./actions/kill-dragon/kill-dragon.handler').then(mod => mod.KillDragonHandler)
+            }
+          ]
+        })
+  ],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
 
-# [Author](#author)
-* Author  : danny
+## Actions
+In this model, each action is called a Action. When a action is sent, the application responds to it. 
+Let's create for example a `ShowNotificationAction` action to display notifications. Let's see how the action looks:
 
-## [English Tutorials](#english-tutorials)
-- Installation - https://www.ganatan.com/tutorials/getting-started-with-angular
-- Tutorials Step by Step - https://www.ganatan.com/tutorials/en
+```typescript
+export class ShowNotificationAction
+{
+    static readonly type = 'ShowNotificationAction';
 
-## [Tutoriels en français](#french-tutorials)
-- Installation - https://www.ganatan.com/tutorials/demarrer-avec-angular
-- Tutoriels Etape par étape - https://www.ganatan.com/tutorials
+    constructor(
+        public readonly type: string,
+        public readonly text: string,
+    )
+    {
+    }
+}
+```
 
+The `ActionBus` is a stream of actions. It delegates actions to the equivalent handlers. Each action must have an appropriate action handler:
+
+```typescript
+@NgModule()
+export class ShowNotificationHandler implements IActionHandler<ShowNotificationAction>
+{
+    constructor(private readonly actionBus: ActionBus)
+    {
+    }
+
+    async execute(action: ShowNotificationAction)
+    {
+        // Load PNotify script
+        await this.actionBus.execute(new LoadScriptsAction('pnotify'));
+        
+        // Show notice
+        new PNotify({
+            text       : action.text,
+            icon       : false,
+            buttons    : {
+                closer : true,
+                sticker: false
+            });
+    }
+}
+```
+All actions and queries work like Angular modules and are loaded with lazy-load at the time of a command or request.
+With this method of work, each change in the application is determined by the appearance of the action. The logic is encapsulated in handlers.
+
+```typescript
+constructor(private readonly actionBus: ActionBus)
+{
+    this.actionBus.execute(new ShowNotificationAction('success', 'Ok'))
+}
+```
+
+## Sagas
+
+Sagas are an extremely powerful feature. A single saga may listen for 1..* actions. Using the RxJS library, it can combine, merge, filter or apply other RxJS operators on the event stream. Each saga returns an Observable which contains a action. This action is dispatched asynchronously.
+
+```typescript
+@Injectable()
+export class HeroesGameSagas {
+  @Saga()
+  dragonKilled = (events$: Observable<any>): Observable<INgEvent> => {
+    return events$.pipe(
+      ofType(HeroKilledDragonEvent),
+      map((event) => new DropAncientItemAction(event.heroId, fakeItemID)),
+    );
+  }
+}
+```
+
+## Queries
+
+The `QueryBus` follows the same pattern as the `ActionsBus`. Example Query Handler:
+```typescript
+@NgModule()
+export class GetEmptyBlockHandler implements IQueryHandler<GetEmptyBlockQuery>
+{
+    async execute(query: GetEmptyBlockQuery): Promise<Element>
+    {
+        const block = document.querySelector('#empty_block');
+ 
+        // logic
+
+        return block;
+    }
+}
+```
+A working example is available in `src/app`.
