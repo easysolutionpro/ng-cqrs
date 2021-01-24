@@ -1,5 +1,9 @@
 ## Description
-
+<p>
+  <a href="https://opensource.org/licenses/MIT" target="_blank">
+    <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
+  </a>
+</p>
 A lightweight **CQRS** module for [Angular](https://angular.io) framework. Action handler and query handler module are loaded with lazy-load at the moment of action or query call. Action handler and query handler are Angular modules and can use Angular libraries in dependencies. Just `1.6kb` minified and gzipped.
 
 ## Installation
