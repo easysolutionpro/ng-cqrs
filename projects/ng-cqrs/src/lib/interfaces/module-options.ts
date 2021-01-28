@@ -3,6 +3,7 @@ import { CqrsRegistryType } from './registry.type';
 
 export interface CqrsModuleOptions
 {
-  sagas?: Type<any>[];
-  registry: CqrsRegistryType[];
+    sagas?: Type<any>[];
+    registry: CqrsRegistryType[];
+    enableLogging?: boolean;
 }

@@ -1,6 +1,7 @@
-export class ActionHandlerNotFoundException
+export class ActionHandlerNotFoundException extends Error
 {
-  constructor(public readonly message = 'ActionHandler not found exception!')
+  constructor(actionName: string)
   {
+    super(`The action handler for the "${actionName}" action was not found!`);
   }
 }

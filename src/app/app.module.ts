@@ -8,20 +8,21 @@ import { HeroesGameSagas } from './sagas/heroes-game.saga';
 import { CqrsModule } from '../../projects/ng-cqrs/src/lib/cqrs.module';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports     : [
-    BrowserModule,
-    CqrsModule.forRoot({
-      sagas   : [HeroesGameSagas],
-      registry: CQRS_REGISTRY
-    }),
-  ],
-  providers   : [
-    { provide: APP_STORE, useValue: appStore }
-  ],
-  bootstrap   : [AppComponent]
+    declarations: [
+        AppComponent
+    ],
+    imports     : [
+        BrowserModule,
+        CqrsModule.forRoot({
+            sagas        : [HeroesGameSagas],
+            registry     : CQRS_REGISTRY,
+            enableLogging: true
+        }),
+    ],
+    providers   : [
+        { provide: APP_STORE, useValue: appStore }
+    ],
+    bootstrap   : [AppComponent]
 })
 export class AppModule
 {
