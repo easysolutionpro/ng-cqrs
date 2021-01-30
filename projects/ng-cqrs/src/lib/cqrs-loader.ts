@@ -9,6 +9,7 @@ import { CqrsRegistryType, IAction, IQuery } from './interfaces';
 import { CqrsHandler } from './interfaces/handler.type';
 import { getActionTypeFromInstance } from './utils';
 import { CQRS_MODULE_REGISTRY } from './tokens';
+import { NoopHandler } from './noop.handler';
 
 
 @Injectable()
@@ -32,7 +33,7 @@ export class CqrsLoader
             let handler = route.handler;
             if (!handler)
             {
-                handler = () => import('./noop.handler').then(m => m.NoopHandler);
+                handler = () => Promise.resolve(NoopHandler);
             }
             this.handlersToLoad.set(getActionTypeFromInstance(route.impl), handler);
         });
