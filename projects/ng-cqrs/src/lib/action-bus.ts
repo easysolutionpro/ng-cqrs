@@ -36,8 +36,8 @@ export class ActionBus extends ObservableBus<IAction> implements IActionBus
         const result = this.loader.execute(action);
         if (this.enableLogging)
         {
-            const value = result instanceof Promise ? (await result) : result;
             this.logger.logAction(getActionTypeFromInstance(action), action);
+            const value = result instanceof Promise ? (await result) : result;
             return Promise.resolve(value);
         }
         return result;

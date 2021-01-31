@@ -32,9 +32,10 @@ export class QueryBus extends ObservableBus<IQuery> implements IQueryBus
         const result = this.loader.execute(query);
         if (this.enableLogging)
         {
-            const value = result instanceof Promise ? (await result) : result;
-            this.logger.logQuery(getActionTypeFromInstance(query), { query, result: value });
-            return Promise.resolve(value);
+            const payload: any = { query };
+            this.logger.logQuery(getActionTypeFromInstance(query), payload);
+            payload.result = result instanceof Promise ? (await result) : result;
+            return Promise.resolve(payload.result);
         }
         return this.loader.execute(query);
     }
