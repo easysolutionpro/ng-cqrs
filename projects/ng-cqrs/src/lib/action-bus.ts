@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { IAction, IActionBus, IActionResult, ISaga } from './interfaces';
 import { getActionTypeFromInstance, ObservableBus } from './utils';
 import { ActionHandlerNotFoundException, InvalidSagaException } from './exceptions';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 import { ofType } from './operators/of-type';
 import { CqrsLoader } from './cqrs-loader';
@@ -14,6 +14,8 @@ import { Logger } from './services/logger';
 @Injectable()
 export class ActionBus extends ObservableBus<IAction> implements IActionBus
 {
+    private sagaSubject$ = new Subject<IAction>();
+
     constructor(
         private readonly loader: CqrsLoader,
         private readonly logger: Logger,
@@ -33,14 +35,14 @@ export class ActionBus extends ObservableBus<IAction> implements IActionBus
             throw new ActionHandlerNotFoundException(`ActionHandler not found for command "${getActionTypeFromInstance(action)}"`);
         }
         this.subject$.next(action);
-        const result = this.loader.execute(action);
         if (this.enableLogging)
         {
             this.logger.logAction(getActionTypeFromInstance(action), action);
-            const value = result instanceof Promise ? (await result) : result;
-            return Promise.resolve(value);
         }
-        return result;
+        const method = this.loader.execute(action);
+        const result  = method instanceof Promise ? (await method) : method;
+        this.sagaSubject$.next(action);
+        return Promise.resolve(result);
     }
 
     ofType<TInput extends IAction, TOutput extends IAction>(
@@ -70,7 +72,7 @@ export class ActionBus extends ObservableBus<IAction> implements IActionBus
         {
             throw new InvalidSagaException();
         }
-        const stream$ = saga(this.subject$);
+        const stream$ = saga(this.sagaSubject$);
         if (!(stream$ instanceof Observable))
         {
             throw new InvalidSagaException();
