@@ -6,7 +6,7 @@ import { QueryHandlerNotFoundException } from './exceptions';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { ofType } from './operators/of-type';
-import { CQRS_MODULE_LOGGING } from './tokens';
+import { CQRS_MODULE_LOGGING, LogSettings } from './tokens';
 import { Logger } from './services/logger';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class QueryBus extends ObservableBus<IQuery> implements IQueryBus
     constructor(
         private readonly loader: CqrsLoader,
         private readonly logger: Logger,
-        @Inject(CQRS_MODULE_LOGGING) readonly enableLogging: boolean
+        @Inject(CQRS_MODULE_LOGGING) readonly logging: LogSettings
     )
     {
         super();
@@ -30,7 +30,7 @@ export class QueryBus extends ObservableBus<IQuery> implements IQueryBus
         }
         this.subject$.next(query);
         const result = this.loader.execute(query);
-        if (this.enableLogging)
+        if (this.logging.enabled)
         {
             const payload: any = { query };
             this.logger.logQuery(getActionTypeFromInstance(query), payload);

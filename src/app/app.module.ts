@@ -16,7 +16,8 @@ import { CqrsModule } from '../../projects/ng-cqrs/src/lib/cqrs.module';
         CqrsModule.forRoot({
             sagas        : [HeroesGameSagas],
             registry     : CQRS_REGISTRY,
-            enableLogging: true
+            enableLogging: true,
+            logPrefix    : 'TestApp'
         }),
     ],
     providers   : [

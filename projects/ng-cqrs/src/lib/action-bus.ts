@@ -8,7 +8,7 @@ import { filter, share } from 'rxjs/operators';
 import { ofType } from './operators/of-type';
 import { CqrsLoader } from './cqrs-loader';
 import { SAGA_METADATA } from './decorators/constants';
-import { CQRS_MODULE_LOGGING, CQRS_MODULE_SAGAS } from './tokens';
+import { CQRS_MODULE_LOGGING, CQRS_MODULE_SAGAS, LogSettings } from './tokens';
 import { Logger } from './services/logger';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class ActionBus extends ObservableBus<IAction> implements IActionBus
         private readonly loader: CqrsLoader,
         private readonly logger: Logger,
         @Inject(CQRS_MODULE_SAGAS) readonly sagas: Type<any>[],
-        @Inject(CQRS_MODULE_LOGGING) readonly enableLogging: boolean
+        @Inject(CQRS_MODULE_LOGGING) readonly logging: LogSettings
     )
     {
         super();
@@ -35,7 +35,7 @@ export class ActionBus extends ObservableBus<IAction> implements IActionBus
             throw new ActionHandlerNotFoundException(`ActionHandler not found for command "${getActionTypeFromInstance(action)}"`);
         }
         this.subject$.next(action);
-        if (this.enableLogging)
+        if (this.logging.enabled)
         {
             this.logger.logAction(getActionTypeFromInstance(action), action);
         }

@@ -6,4 +6,5 @@ export interface CqrsModuleOptions
     sagas?: Type<any>[];
     registry: CqrsRegistryType[];
     enableLogging?: boolean;
+    logPrefix?: string;
 }

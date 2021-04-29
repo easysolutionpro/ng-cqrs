@@ -23,7 +23,10 @@ export class CqrsModule
                 ...options.sagas,
                 {
                     provide : CQRS_MODULE_LOGGING,
-                    useValue: !!options.enableLogging,
+                    useValue: {
+                        enabled: !!options.enableLogging,
+                        prefix : options.logPrefix
+                    },
                 },
                 {
                     provide : CQRS_MODULE_REGISTRY,
